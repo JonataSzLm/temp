@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>Conversor - Levantamento</title>
+    <style type="text/css">
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            width: 100vw;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: row;
+            justify-content: center;
+            align-items: center;
+        }
+        #filecontents {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            width: 100%;
+            height: 100%;
+        }
+        .box input {
+            border: 1px solid black;
+            margin: 10px;
+            padding: 5px;
+            min-width: 500px;
+        }
+        input {
+            min-width: 500px;
+            font-size: 1rem;
+        }
+        .row {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            width: 70%;
+            border-bottom: 1px solid black;
+            padding: 5px 0;
+        }
+        h1 {
+            font-weight: bold;
+            font-size: 1rem;
+        }
+        button {
+            width: 100%;
+            font-size: 1rem;
+        }
+        #form {
+            overflow: hidden;    
+        }
+        .box {
+            max-width: 250px;
+        }
+        td, th, table, tr {
+            border-collapse: collapse;
+            font-size: .8rem;
+        }
+        td, th {
+            border: 1px black solid;
+            padding: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div id="filecontents">
+        <div class="row" id="fileHide">
+            <h1>Selecione o arquivo de entrada:</h1>
+            <input type="file" id="txtfiletoread" />
+        </div>
+        <div class="row"><h1>Confirme a saida do conteudo:</h1></div>
+        <div class="row">
+            <h1>Nome do Usuario:</h1>
+            <div class="box" id="un"></div>
+            <input id="username"></input> 
+        </div>
+        <div class="row">
+            <h1>Nome do Computador:</h1>
+            <div class="box" id="pc"></div>
+            <input id="hostname"></input> 
+        </div>
+        <div class="row">
+            <h1>Processador:</h1>
+            <div class="box" id="proc"></div>
+            <input id="processor"></input> 
+        </div>
+        <div class="row">
+            <h1>Memoria RAM:</h1>
+            <div class="box" id="mem"></div>
+            <input id="memory"></input> 
+        </div>
+        <div class="row">
+            <h1>HD/SSD:</h1>
+            <div id="disk" class="box"></div>
+            <input type="text" id="ssd"> 
+        </div>
+        <div class="row">
+            <h1>IP:</h1>
+            <div class="box" id="ipr"></div>
+            <input id="ip"></input> 
+        </div>
+        <div class="row">
+            <h1>Barramento de Rede</h1>
+            <div class="box" id="nc"></div>
+            <input id="net"></input> 
+        </div>
+        <div class="row">
+            <h1>Numero Serial:</h1>
+            <div class="box" id="sn"></div>
+            <input id="serial"></input>
+        </div>
+        <div class="row">
+            <h1>PrintAudit:</h1>
+            <div class="box" id="pa"></div>
+            <input id="print"></input> 
+        </div>
+        <div class="row"><button onclick="save()">SALVAR DADOS</button></div>
+        <div class="row"><h1>Resultado Final (CSV): </h1></div>
+        <div class="row">
+            <div id="results">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nome do Computador:</th>
+                            <th>Nome do Usuario:</th>
+                            <th>Processador:</th>
+                            <th>Memoria RAM:</th>
+                            <th>Barramento de Rede:</th>
+                            <th>IP:</th>
+                            <th>SerialNumber:</th>
+                            <th>PrintAudit:</th>
+                            <th>SSD/HD:</th>
+                        </tr>
+                    </thead>
+                    <tbody  id="pai">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row"><button onclick="readFile()">BAIXAR CSV</button></div>
+    </div>
+    <script>
+
+        function loadResults() {
+            data = localStorage.getItem('dados')
+            data = data.replace(/[\r]/g, '')
+            dados = '<tr><td>'
+            dados += data.replace(/[;]/g, '</td><td>')
+            dados = dados.replace(/[\n]/g, '</tr><tr><td>')
+            dados += '</tr>'
+            let pai = document.getElementById('pai');
+            pai.innerHTML = dados
+        }
+
+        function save() {
+            
+            computer = document.getElementById('hostname').value
+            user = document.getElementById('username').value
+            processor = document.getElementById('processor').value
+            memory = document.getElementById('memory').value
+            network = document.getElementById('net').value
+            ssd = document.getElementById('ssd').value
+            ip = document.getElementById('ip').value
+            serial = document.getElementById('serial').value
+            printA = document.getElementById('print').value
+
+            data = computer + ';' + user + ';' + processor + ';' + memory + ';' + network + ';' + ip  + ';' + serial + ';' + printA + ';' + ssd + ';\n'
+            
+            if (localStorage.getItem('dados')) {
+                temp = localStorage.getItem('dados')
+                data = temp + data
+            }
+            localStorage.setItem('dados', data)
+            window.location.reload()
+        }
+
+        function readFile() {
+            var data = 'Nome do Computador;Nome do Usuario;Processador;Memoria RAM;Barramento de Rede;IP;SerialNumber;Print Audit;SSD/HD;\n' + localStorage.getItem('dados')
+            var hiddenElement = document.createElement('a');
+            hiddenElement.href = 'data:text/csv;charset=utf-8,' + encodeURI(data);
+            hiddenElement.target = '_blank';
+            hiddenElement.download = 'levantamento.csv';
+            hiddenElement.click()
+        }
+
+        function loadFile() {
+            //Check the support for the File API support
+            if (window.File && window.FileReader && window.FileList && window.Blob) {
+                var fileSelected = document.getElementById('txtfiletoread');
+                fileSelected.addEventListener('change', function (e) {
+                    //Set the extension for the file
+                    var fileExtension = /text.*/;
+                    //Get the file object
+                    var fileTobeRead = fileSelected.files[0];
+                    //Check of the extension match
+                    if (fileTobeRead.type.match(fileExtension)) {
+                        //Initialize the FileReader object to read the 2file
+                        var fileReader = new FileReader();
+                        fileReader.onload = function (e) {
+                            var fileContent = fileReader.result;
+
+
+                            //INDICES 
+                            let iComputer = +fileContent.indexOf('Nome do Computador:');
+                            let iUser = +fileContent.indexOf('Nome do Usuario:');
+                            let iProcessor = +fileContent.indexOf('Processador:');
+                            let iMemory = +fileContent.indexOf('Memoria:');
+                            let iNetwork = +fileContent.indexOf('Placa de Rede:');
+                            let iDisk = +fileContent.indexOf('HD/SSD:');
+                            let iIP = +fileContent.indexOf('IP:');
+                            let iSerial = +fileContent.indexOf('Numero Serial:');
+                            let iPrint = +fileContent.indexOf('PrintAudit:');
+                            let iEnd = fileContent.length
+
+
+                            // Nome do computador
+                            let computer = fileContent.slice(iComputer, iUser)
+                            computer = computer.replace('Nome do Computador: ', '')
+                            computer = computer.replace(/[\r\n ]/g, '')
+                            document.getElementById('pc').innerHTML = computer
+
+                            // Nome do Usuario
+                            let user = fileContent.slice(iUser, iProcessor)
+                            user = user.replace('Nome do Usuario: ', '')
+                            user = user.replace(/[\r\n ]/g, '')
+                            document.getElementById('un').innerHTML = user
+
+                            //Processador
+                            let processor = fileContent.slice(iProcessor, iMemory)
+                            processor = processor.replace('Processador: ', '')
+                            processor = processor.replace(/[\r\n]/g, '')
+                            document.getElementById('proc').innerHTML = processor
+
+                            //Memoria
+                            let memory = fileContent.slice(iMemory, iNetwork)
+                            memory = memory.replace('Memoria:', '')
+                            memory = memory.replace(/[\r\n]/g, '')
+                            document.getElementById('mem').innerHTML = memory
+                            memory = memory.split(' ')
+                            var mem = 0
+                            memory.forEach(e => {
+                                mem += +e
+                            });
+                            memory = mem
+                            memory = memory/1073741824 + 'GB'
+
+                            //Barramento de rede
+                            let network = fileContent.slice(iNetwork, iDisk)
+                            network = network.replace('Placa de Rede:', '')
+                            network = network.replace(/[\r\n ]/g, '')
+                            document.getElementById('nc').innerHTML = network
+                            network = network.slice(network.length - 10, network.length)
+                            network = +network / 1000000
+                            network = '/' + network
+
+                            //HD ou SSD
+                            let disk = fileContent.slice(iDisk, iIP)
+                            disk = disk.replace('HD/SSD:', '')
+                            disk = disk.replace(/[\r\n]/g, '')
+
+                            //IP
+                            let ip = fileContent.slice(iIP, iSerial )
+                            ip = ip.replace('IP:', '')
+                            ip = ip.replace(/[Endere�o IPv4 : ]/g, '')
+                            ip = ip.replace(/.............../g, '')
+                            document.getElementById('ipr').innerHTML = ip
+
+                            //Numero Serial
+                            let serial = fileContent.slice(iSerial, iPrint)
+                            serial = serial.replace('Numero Serial:', '')
+                            serial = serial.replace(/[\r\n ]/g, '')
+                            document.getElementById('sn').innerHTML = serial
+                            
+                            //PrintAudit
+                            let print = fileContent.slice(iPrint, iEnd)
+                            print = print.replace('PrintAudit:', '')
+                            print = print.replace(/[\r\n ]/g, '')
+                            document.getElementById('pa').innerHTML = print
+
+                            //Inserção dos valores nos inputs
+                            document.getElementById('hostname').value = computer
+                            document.getElementById('username').value = user
+                            document.getElementById('processor').value = processor
+                            document.getElementById('memory').value = memory
+                            document.getElementById('net').value = network
+                            document.getElementById('disk').innerText = disk
+                            document.getElementById('ip').value = ip
+                            document.getElementById('serial').value = serial
+                            document.getElementById('print').value = print
+                            document.getElementById('ssd').value = disk
+
+                            document.getElementById('fileHide').style = 'display: none'
+
+                        }
+                        fileReader.readAsText(fileTobeRead);
+                    }
+                    else {
+                        alert("Por favor selecione arquivo texto");
+                    }
+
+                }, false);
+            }
+            else {
+                alert("Arquivo(s) não suportado(s)");
+            }
+        }
+
+        window.onload = function () {
+            loadFile()
+            loadResults()
+        }
+    </script>
+</body>
+</html>
