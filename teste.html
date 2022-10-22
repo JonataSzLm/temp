@@ -257,7 +257,7 @@
                             network = network.replace('Placa de Rede:', '')
                             network = network.replace(/[\r\n ]/g, '')
                             document.getElementById('nc').innerHTML = network
-                            network = network.slice(network.length - 10, network.length)
+                            network = network.slice(network.length - 11, network.length)
                             network = +network / 1000000
                             network = '/' + network
 
@@ -282,7 +282,7 @@
                             //PrintAudit
                             let print = fileContent.slice(iPrint, iEnd)
                             print = print.replace('PrintAudit:', '')
-                            print = print.replace(/[\r\n ]/g, '')
+                            print = print.replace(/[\r\n]/g, '')
                             document.getElementById('pa').innerHTML = print
 
                             //Inserção dos valores nos inputs
